@@ -4,10 +4,9 @@
   "main": "src/app.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun src/app.ts",
+    "dev": "tsx watch src/app.ts",
     "build": "tsc",
-    "start": "node ./dist/app.js",
-    "prestart": "npm run build"
+    "start": "node ./dist/app.js"
   },
   "keywords": [],
   "author": "",
@@ -33,7 +32,7 @@
     "@types/node": "^24.5.2",
     "@types/uuid": "^10.0.0",
     "tap": "^21.1.0",
-    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   }
 }
