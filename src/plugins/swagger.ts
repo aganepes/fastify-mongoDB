@@ -10,10 +10,12 @@ export default fastifyPlugin(async (fastify) => {
         description: "Example fastify with mongo DB",
         version: "1.0.0",
       },
+      host: 'localhost:3000',
       schemes: ["http"],
       consumes: ["application/json"],
       produces: ["application/json"],
     },
+    exposeRoute: true
   });
 
   fastify.register(fastifySwaggerUi, {

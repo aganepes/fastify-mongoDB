@@ -10,34 +10,73 @@ export default async function (fastify: FastifyInstance) {
 
   fastify.get("/category",{
       schema: {
+        summary: 'Get all categories by page',
         querystring: {
           type: 'object',
-          required: ['slug_name'],
           properties:{
             slug_name: { type: 'string' },
-            page: { type: 'int' }
+            page: { type: 'number' }
           }
-        }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              categories: { 
+                type: 'array',
+                items:{
+                  type: 'object',
+                  properties:{
+                    id:{type:'string'},
+                    name:{
+                      type:'object',
+                      properties:{
+                        tm:{ type: 'string' },
+                        ru:{ type: 'string' },
+                        en:{ type: 'string' },
+                        slug:{ type: 'string' },
+                      },
+                    },
+                    description: { type: 'string' }
+                  }
+                }
+              },
+              currentPage: { type: 'number' },
+            },
+          },
+          500:{
+            type:'object',
+            properties:{
+              error:{type:'string'},
+              success:{type:'boolean'}
+            }
+          },
+        },
       }
     }, async (req, reply) => {
-    let { slug_name,page } = req.query as { slug_name:string,page:number|any};
+    let { slug_name,page } = req.query as { slug_name:string|undefined,page:number|undefined};
 
     if(!page){
       page = parseInt(page) || 1;
     }
     try {
-      const categories = await Category.find({name:{slug:slug_name}}).skip((page - 1) * categoryLimit).limit(categoryLimit);
+      let categories;
+
+      if(slug_name){
+        categories = await Category.find({name:{slug:slug_name}}).skip((page - 1) * categoryLimit).limit(categoryLimit);
+      }else{
+        categories = await Category.find({}).skip((page - 1) * categoryLimit).limit(categoryLimit);
+      }
     
       return reply.status(200).send({ 
         categories,
-        currentPage: page,
-        totalPages: Math.ceil(categories.length / categoryLimit)
+        currentPage: page
       });
+
     } catch (error) {
-      return reply.status(500).send({error:error.message});
+      return reply.status(500).send({error:error.message,success:false});
     }
     
-
   });
 
   fastify.post("/category",{
@@ -58,7 +97,23 @@ export default async function (fastify: FastifyInstance) {
           },
           description: { type: 'string' }
         }
-      }
+      },
+      response:{
+        500:{
+          type:'object',
+          properties:{
+            error:{type:'string' },
+            success:{type:'boolean'}
+          }
+        },
+        201:{
+          type:'object',
+          properties:{
+            message:{type:'string'},
+            success:{type:'boolean'}
+          }
+        },
+      },
     }
   }, async (req, reply) => {
     const { name, description } = req.body as { name: cateogryName; description: string |undefined };
@@ -69,7 +124,7 @@ export default async function (fastify: FastifyInstance) {
         return reply.status(201).send({message:"Category created",success:true });
 
     } catch (error) {
-      return reply.status(500).send({error:error.message});
+      return reply.status(500).send({error:error.message,success:false});
     }
 
   });
@@ -99,7 +154,46 @@ export default async function (fastify: FastifyInstance) {
           },
           description: { type: 'string' }
         }
-      }
+      },
+      response:{
+        500:{
+          type:'object',
+          properties:{
+            error:{type:'string'},
+            success:{type:'boolean'}
+          }
+        },
+        404:{
+          type:'object',
+          properties:{
+            error:{type:'string'},
+            success:{type:'boolean'}
+          }
+        },
+        200:{
+          type:'object',
+          properties:{
+            message:{type:'string'},
+            success:{type:'boolean'},
+            category:{
+              type:'object',
+              properties: {
+                id:{type:'string'},
+                name: { 
+                  type: 'object',
+                  properties:{
+                    tm:{ type: 'string' },
+                    ru:{ type: 'string' },
+                    en:{ type: 'string' },
+                    slug:{ type: 'string' }
+                  }
+                },
+                description: { type: 'string' }
+              },
+            }
+          }
+        },
+    },
     }
   }, async (req, reply) => {
 
@@ -116,7 +210,7 @@ export default async function (fastify: FastifyInstance) {
       return reply.status(200).send({message:"Category updated",category,success:true });
 
     } catch (error) {
-      return reply.status(500).send({error:error.message});
+      return reply.status(500).send({error:error.message,success:false});
     }
 
   });

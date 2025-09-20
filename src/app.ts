@@ -1,4 +1,4 @@
-import fastify from "fastify";
+import Fastify from "fastify";
 import jwt from "@fastify/jwt";
 import db from './plugins/db.js';
 import swagger from "./plugins/swagger.js";
@@ -9,23 +9,23 @@ import authentication from './plugins/authentication.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const Fastify =fastify({logger:true});
+const fastify =Fastify({logger:true});
 
-Fastify.register(db);
-Fastify.register(swagger);
-Fastify.register(jwt,{secret:process.env.JWT_SECRET || 'Ahmedow'});
-Fastify.register(authentication);
+fastify.register(db);
+fastify.register(swagger);
+fastify.register(jwt,{secret:process.env.JWT_SECRET || 'Ahmedow'});
+fastify.register(authentication);
 
-Fastify.register(authRoutes,{prefix:"/auth"});
-Fastify.register(categoryRoutes);
-Fastify.register(subCategoryRoutes);
+fastify.register(authRoutes,{prefix:"/auth"});
+fastify.register(categoryRoutes);
+fastify.register(subCategoryRoutes);
 
 const startServer= async ()=>{
     try {
-        await Fastify.listen({port:3000});
-        Fastify.swagger();
+        await fastify.listen({port:3000});
+        fastify.swagger();
     } catch (error) {
-        Fastify.log.error(error);
+        fastify.log.error(error);
         process.exit(1);
     }
 }

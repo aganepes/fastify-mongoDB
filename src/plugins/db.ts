@@ -1,4 +1,3 @@
-// MongoDB bağlantısı
 import fastifyPlugin from 'fastify-plugin';
 import mongoose from 'mongoose';
 

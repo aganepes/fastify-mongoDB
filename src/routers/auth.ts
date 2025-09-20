@@ -18,7 +18,6 @@ export default async function (fastify: FastifyInstance) {
       }
     }, async (req, reply) => {
     const { nomer, password } = req.body as { nomer: string; password: string };
-
     const userExists = await User.findOne({nomer});
     if(!userExists){
       return reply.status(400).send({message:"User already exists",success:false});

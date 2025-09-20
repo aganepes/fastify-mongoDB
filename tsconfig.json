@@ -14,9 +14,8 @@
     "noImplicitAny": true,
     "useUnknownInCatchVariables": false,
     "inlineSourceMap": true,
-  "noEmit": false,
-    
-  "declarationMap": false,
+    "noEmit": false,
+    "declarationMap": false,
     "incremental": true,
     "declaration": true
   }
